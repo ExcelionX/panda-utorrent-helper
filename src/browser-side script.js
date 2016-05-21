@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name        Panda uTorrent Helper Browser script
+// @name        inline test #7 test
 // @namespace   exh
-// @description Inlines torrent into to gallery view in sadpanda & regular panda and manages torrent downloads for you.
+// @description Inlines torrent into to gallery view in sadpanda & regular panda, and allows for quick torrent configuration.
 // @include     http://exhentai.org/g/*
 // @include     https://exhentai.org/g/*
-// @include		http://g.e-hentai.org/g/*
-// @include		https://g.e-hentai.org/g/*
+// @include			http://g.e-hentai.org/g/*
+// @include			https://g.e-hentai.org/g/*
 // @connect 	127.0.0.1
 // @version     1
 // @grant       GM_xmlhttpRequest
@@ -14,8 +14,8 @@
 
 
 
-var host = "127.0.0.1"; //localhost
-var localport = 3000; //whatever port the server uses for localhost
+var host = "127.0.0.1";
+var localport = 3000;
 
 
 var link = getTorrentLink();
@@ -137,9 +137,11 @@ function sendDownloadRequest(url, callback){
 }
 */
 
-function downloadTorrent(link, oldtitle){
+function downloadTorrent(link){
+   var rawTitle = document.getElementById('gn').textContent;
+   var processedTitle = rawTitle.replace(/%/g, '%25');
 
-    var title = encodeURIComponent(document.getElementById('gn').textContent); //check for ' in string?
+    var title = encodeURIComponent(processedTitle); //check for ' in string?
     //var oldTitle = encodeURIComponent(oldtitle);
 	
 	//sendDownloadRequest(link, checkTorrent);
