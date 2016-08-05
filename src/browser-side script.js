@@ -4,8 +4,8 @@
 // @description Inlines torrent into to gallery view in sadpanda & regular panda, and allows for quick torrent configuration.
 // @include     http://exhentai.org/g/*
 // @include     https://exhentai.org/g/*
-// @include			http://g.e-hentai.org/g/*
-// @include			https://g.e-hentai.org/g/*
+// @include		http://g.e-hentai.org/g/*
+// @include		https://g.e-hentai.org/g/*
 // @connect 	127.0.0.1
 // @version     1
 // @grant       GM_xmlhttpRequest
@@ -15,7 +15,8 @@
 
 
 var host = "127.0.0.1";
-var localport = 3000;
+var httpsPort = 3000;
+
 
 
 var link = getTorrentLink();
@@ -26,10 +27,10 @@ console.log(link);
 
 
 function getTorrentLink() {
-  var EXTRACT_URL_REGEX = /http.*\.php\?[a-zA-Z0-9&=]*/
+  var EXTRACT_URL_REGEX = /(http|https).*\.php\?[a-zA-Z0-9&=]*/
   var linkElm = document.getElementsByClassName('g2')[1].lastChild;
   var link = linkElm.getAttribute('onclick').match(EXTRACT_URL_REGEX);
-  
+  console.log(link[0]);
   return link[0];
 }
 
@@ -144,8 +145,17 @@ function downloadTorrent(link){
     var title = encodeURIComponent(processedTitle); //check for ' in string?
     //var oldTitle = encodeURIComponent(oldtitle);
 	
+    
+    var protocol;
+    var localport;
+    
+    
+      protocol = "https://";
+      localport = httpsPort;
+    
+    
 	//sendDownloadRequest(link, checkTorrent);
-    var url = "http://" + host + ":" + localport + "/?link=" + link + "&title=" + title;
+    var url = protocol + host + ":" + localport + "/?link=" + link + "&title=" + title;
 	console.log("URL: " + url);
 
 	

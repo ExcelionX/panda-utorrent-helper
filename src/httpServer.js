@@ -1,21 +1,33 @@
 const http = require('http');
+const https = require('https');
+
 var url = require('url');
 
-const hostname = '127.0.0.1'; //localhost
-const port = 3000; //whatever local port I guess?
-const TORRENT_PORT = 8080; //set to torrent settings
-const user = 'username';
-const pw = 'password';
-const auth = user + ":" + pw; // useless?
-var dir = 'C:\\Test\\Test\\'; //windows directory from utorrent settings, might change this later to be automatic
-var token;
+var tls = require('tls');
+var fs = require('fs');
+
+var options = {
+  key: fs.readFileSync('.key'),
+  cert: fs.readFileSync('.crt')
+};
+
+
+const hostname = '127.0.0.1';
+const httpsPort = 3000;
+const httpPort = 4000;
+const TORRENT_PORT = 8080;
+const user = '';
+const pw = '';
+const auth = user + ":" + pw;
+var dir = '';
+ var token;
 
 var cacheID;
 var runningTorrents = {};
 var checkTimer;
 var tokenTimer;
 
-var saveName = "savedTorrents.json"; //custom name if you want
+var saveName = "savedTorrents.json";
 
 
 function getTorrentToken(){
@@ -535,19 +547,13 @@ function renameFile(oldname, newname){
 }
 
 
-
-
-
-
-
-
-const server = http.createServer((request, response) => {
+const requestHandler = (request, response) => {
 
 	var queryData = url.parse(request.url, true).query;
 
 	  
 	if (queryData.link && queryData.title) {
-		// user told us their name in the GET request, ex: http://host:8000/?name=Tom
+		
 		
 		var link = queryData.link;
 		var title = decodeURIComponent(queryData.title);
@@ -566,15 +572,26 @@ const server = http.createServer((request, response) => {
 	} else {
 			sendErrorResponse(response, "Invalid query parameters");
 	}
-  
-  
-  
+
+
+}
+
+
+
+getTorrentToken(); //add timer for 30min here to refresh token/and check somewhere for utorrent quits
+startTokenTimer();
+readFromFile();
+
+const server = https.createServer(options, requestHandler);
+
+server.listen(httpsPort, hostname, () => {
+
+	
+	console.log(`Server running at https://${hostname}:${httpsPort}/`);
 });
 
-server.listen(port, hostname, () => {
-
-	getTorrentToken(); //add timer for 30min here to refresh token/and check somewhere for utorrent quits
-	startTokenTimer();
-	readFromFile();
-	console.log(`Server running at http://${hostname}:${port}/`);
-});
+//const httpServer = http.createServer(requestHandler);
+//httpServer.listen(httpPort, hostname, () => {
+	
+	//console.log("HTTP server running");
+//});
